@@ -51,6 +51,7 @@ class MyRob(CRobLinkAngs):
         self.i = 1
         self.out_now = 0
         self.sum = 0
+        self.spd_out = 0
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -100,12 +101,17 @@ class MyRob(CRobLinkAngs):
                 self.wander()
 
 
-    def stop_movement(self, next_pos):
-        if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
-        and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
+    def stop_movement(self, sum):
+        print(self.measures.irSensor[0])
+        if sum >= 1.85 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
             return True
         else:
             return False
+        # if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
+        # and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
+        #     return True
+        # else:
+        #     return False
 
     def calculateDist(self, in_spd, out_prev):
         return (in_spd + out_prev) / 2
@@ -580,32 +586,41 @@ class MyRob(CRobLinkAngs):
         else:
             self.previous = 0
             self.flag = 0
-
         # If the robot is going to the left, turns accordingly
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
-
             # Checks if the robot has reached the correct cell
-            if self.stop_movement(self.next_pos):
+            out_prev = self.out_now
+            self.out_now = self.calculateDist(self.spd_out, out_prev)
+            self.sum += self.out_now
+            if self.stop_movement(self.sum):
+                print('parou')
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
@@ -626,25 +641,36 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
-            if self.stop_movement(self.next_pos):
+            out_prev = self.out_now
+            self.out_now = self.calculateDist(self.spd_out, out_prev)
+            self.sum += self.out_now
+            if self.stop_movement(self.sum):
+                print('parou')
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -665,25 +691,36 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'right') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'right') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'right') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
-            if self.stop_movement(self.next_pos):
+            out_prev = self.out_now
+            self.out_now = self.calculateDist(self.spd_out, out_prev)
+            self.sum += self.out_now
+            if self.stop_movement(self.sum):
+                print('parou')
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -704,25 +741,37 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.15, 0.15)
+                        self.spd_out = 0.15
+                        self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
-            if self.stop_movement(self.next_pos):
+            out_prev = self.out_now
+            self.out_now = self.calculateDist(self.spd_out, out_prev)
+            self.sum += self.out_now
+
+            if self.stop_movement(self.sum):
+                print('parou')
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -740,18 +789,8 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.go_to_ls = True
 
-
-        out_prev = self.out_now
-        self.out_now = self.calculateDist(0.15, out_prev)
-
-        self.sum += self.out_now
-
-        # print(self.out_now)
-        # print('Sum: ' + str(self.sum))
-
-        if self.sum >= 4:
-            # print('Soma final' + str(self.sum))
-            self.driveMotors(0.0, 0.0)
+        print('Sum: ' + str(self.sum))
+        print('Spd:' + str(self.spd_out))
 
 
 

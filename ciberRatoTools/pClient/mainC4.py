@@ -71,18 +71,12 @@ class MyRob(CRobLinkAngs):
         return (in_spd + out_prev) / 2
 
     def wander(self):
+        center_id = 0
 
-        out_prev = self.out_now
         self.driveMotors(0.15, 0.15)
-        self.out_now = self.calculateDist(0.15, out_prev)
-        
-        self.sum += self.out_now
-        print(self.out_now)
-        print('Sum: ' + str(self.sum))
 
-        if self.sum > 2:
-            print('Soma final' + str(self.sum))
-            self.driveMotors(0.0, 0.0)
+        if self.measures.irSensor[center_id] > 1.5:
+            self.driveMotors(0, 0)
 
 class Map():
     def __init__(self, filename):
