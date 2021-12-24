@@ -72,8 +72,8 @@ class MyRob(CRobLinkAngs):
 
     def wander(self):
         center_id = 0
-
-        self.driveMotors(0.15, 0.15)
+        #print(self.measures.compass)
+        #self.driveMotors(0.15, 0.15)
 
         if self.measures.irSensor[center_id] > 1.5:
             self.driveMotors(0, 0)

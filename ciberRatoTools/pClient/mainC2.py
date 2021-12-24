@@ -102,7 +102,7 @@ class MyRob(CRobLinkAngs):
 
 
     def stop_movement(self, sum):
-        print(self.measures.irSensor[0])
+        #print("Sensor 0:" + str(self.measures.irSensor[0]))
         if sum >= 1.85 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
             return True
         else:
@@ -568,11 +568,12 @@ class MyRob(CRobLinkAngs):
                 self.go_left = False
                 self.go_right = False
                 self.go_back = True
-            print('To visit:' + str(self.squares_to_visit))
-
+            #print('To visit:' + str(self.squares_to_visit))
+            #print(' Next position ' + str(self.next_pos))
         # If the robot has already been in the next position,
         # it goes to the next closest known position it hasn't been in.
         next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+        print(' Next position ' + str(self.next_pos))
         if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0:
                 self.previous_pos=26-next_position[1],next_position[0]
@@ -586,6 +587,9 @@ class MyRob(CRobLinkAngs):
         else:
             self.previous = 0
             self.flag = 0
+        # print("Sendores (r/l)")
+        # print(self.measures.irSensor[right_id])
+        # print(self.measures.irSensor[left_id])
         # If the robot is going to the left, turns accordingly
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
@@ -616,6 +620,14 @@ class MyRob(CRobLinkAngs):
             out_prev = self.out_now
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
+            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out-0.01, self.spd_out)
+            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
                 print('parou')
                 self.sum = 0
@@ -666,6 +678,14 @@ class MyRob(CRobLinkAngs):
             out_prev = self.out_now
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
+            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out-0.01, self.spd_out)
+            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
                 print('parou')
                 self.sum = 0
@@ -716,6 +736,14 @@ class MyRob(CRobLinkAngs):
             out_prev = self.out_now
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
+            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out-0.01, self.spd_out)
+            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
                 print('parou')
                 self.sum = 0
@@ -766,7 +794,14 @@ class MyRob(CRobLinkAngs):
             out_prev = self.out_now
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
-
+            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out-0.01, self.spd_out)
+            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
+                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
+                #print(self.spd_out)
+                self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
                 print('parou')
                 self.sum = 0
@@ -789,8 +824,8 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.go_to_ls = True
 
-        print('Sum: ' + str(self.sum))
-        print('Spd:' + str(self.spd_out))
+        #print('Sum: ' + str(self.sum))
+        #print('Spd:' + str(self.spd_out))
 
 
 
@@ -809,15 +844,17 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(-0.05, 0.05)
             elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
                 self.driveMotors(0.05, -0.05)
-            elif (self.measures.compass>(180-6) and self.measures.compass<(180-1)):
+            elif (self.measures.compass>(180-6) and self.measures.compass<(180-2)):
                 self.driveMotors(-0.005,0.005)
-            elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+1)):
+            elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+2)):
                 self.driveMotors(0.005,-0.005)
-            elif(self.measures.compass<=(-180+1) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-1) and self.measures.compass<=(180)):
-                if(self.measures.compass==(-180+1)):
+            elif(self.measures.compass<=(-180+2) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-2) and self.measures.compass<=(180)):
+                if(self.measures.compass==(-180+2)):
                     self.driveMotors(0.004,-0.004)
-                elif(self.measures.compass==(180-1)):
+                    self.walk += 1
+                elif(self.measures.compass==(180-2)):
                     self.driveMotors(-0.004,0.004)
+                    self.walk += 1
                 else:
                     self.walk += 1
                     self.driveMotors(0,0)
@@ -833,14 +870,14 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(-0.05, 0.05)
         elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
             self.driveMotors(0.05, -0.05)
-        elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-1)):
+        elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-2)):
             self.driveMotors(-0.005,0.005)
-        elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+1)):
+        elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+2)):
             self.driveMotors(0.005,-0.005)
-        elif(self.measures.compass<=(degrees+1) and self.measures.compass>=(degrees-1)):
-            if(self.measures.compass==(degrees+1)):
+        elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
+            if(self.measures.compass==(degrees+2)):
                 self.driveMotors(0.004,-0.004)
-            elif(self.measures.compass==(degrees-1)):
+            elif(self.measures.compass==(degrees-2)):
                 self.driveMotors(-0.004,0.004)
             else:
                 self.walk += 1
