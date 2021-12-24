@@ -834,19 +834,25 @@ class MyRob(CRobLinkAngs):
         if(degrees == -180 or degrees == 180):
             if self.walk == 4:
                 self.walk = 0
+                self.driveMotors(0,0)
                 return 1
             elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
                 if(direction == 'left'):
                     self.driveMotors(-0.10, 0.10)
                 else:
                     self.driveMotors(0.10, -0.10)
+                self.walk = 0
             elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
+                self.walk = 0
                 self.driveMotors(-0.05, 0.05)
             elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
+                self.walk = 0
                 self.driveMotors(0.05, -0.05)
             elif (self.measures.compass>(180-6) and self.measures.compass<(180-2)):
+                self.walk = 0
                 self.driveMotors(-0.005,0.005)
             elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+2)):
+                self.walk = 0
                 self.driveMotors(0.005,-0.005)
             elif(self.measures.compass<=(-180+2) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-2) and self.measures.compass<=(180)):
                 if(self.measures.compass==(-180+2)):
@@ -860,25 +866,33 @@ class MyRob(CRobLinkAngs):
                     self.driveMotors(0,0)
         elif self.walk == 4:
             self.walk = 0
+            self.driveMotors(0,0)
             return 1
         elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
             if(direction == 'left'):
                 self.driveMotors(-0.10, 0.10)
             else:
                 self.driveMotors(0.10, -0.10)
+            self.walk = 0
         elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
+            self.walk = 0
             self.driveMotors(-0.05, 0.05)
         elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
+            self.walk = 0
             self.driveMotors(0.05, -0.05)
         elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-2)):
+            self.walk = 0
             self.driveMotors(-0.005,0.005)
         elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+2)):
+            self.walk = 0
             self.driveMotors(0.005,-0.005)
         elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
             if(self.measures.compass==(degrees+2)):
                 self.driveMotors(0.004,-0.004)
+                self.walk += 1
             elif(self.measures.compass==(degrees-2)):
                 self.driveMotors(-0.004,0.004)
+                self.walk += 1
             else:
                 self.walk += 1
                 self.driveMotors(0,0)

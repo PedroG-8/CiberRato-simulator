@@ -31,6 +31,8 @@ class MyRob(CRobLinkAngs):
         # Variables
         self.out_now = 0
         self.sum = 0
+        self.count=0
+        self.walk = 0
 
         while True:
             self.readSensors()
@@ -72,12 +74,89 @@ class MyRob(CRobLinkAngs):
 
     def wander(self):
         center_id = 0
-        #print(self.measures.compass)
-        #self.driveMotors(0.15, 0.15)
+        
+        # if(self.measures.compass > -4 and self.measures.compass<4):
+        #     self.count+=1
+        # else:
+        #     self.count=0
 
-        if self.measures.irSensor[center_id] > 1.5:
+        # if(self.count<=self.sum):
+        #     pass
+        # else:
+        #     self.sum=self.count
+        #     print("Maior contagem " + str(self.sum))
+        print(self.measures.compass)
+        # self.driveMotors(0.15, 0.15)
+        
+        if(self.count==1):
+            print("Acabou")
             self.driveMotors(0, 0)
+        else:
+            self.count = self.turn(-180,"left")
+        #if self.measures.irSensor[center_id] > 1.5:
+        #    self.driveMotors(0, 0)
 
+    # Turns the robot to the correct direction
+    def turn(self, degrees, direction):
+        if(degrees == -180 or degrees == 180):
+            if self.walk == 4: 
+                self.driveMotors(0,0)
+                self.walk = 0
+                return 1
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
+                if(direction == 'left'):
+                    self.driveMotors(-0.10, 0.10)
+                else:
+                    self.driveMotors(0.10, -0.10)
+            elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
+                self.driveMotors(-0.05, 0.05)
+            elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
+                self.driveMotors(0.05, -0.05)
+            elif (self.measures.compass>(180-6) and self.measures.compass<(180-2)):
+                self.driveMotors(-0.005,0.005)
+            elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+2)):
+                self.driveMotors(0.005,-0.005)
+            elif(self.measures.compass<=(-180+2) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-2) and self.measures.compass<=(180)):
+                if(self.measures.compass==(-180+2)):
+                    self.driveMotors(0.004,-0.004)
+                    self.walk += 1
+                elif(self.measures.compass==(180-2)):
+                    self.driveMotors(-0.004,0.004)
+                    self.walk += 1
+                else:
+                    self.walk += 1
+                    self.driveMotors(0,0)
+        elif self.walk == 4:
+            self.driveMotors(0,0)
+            self.walk = 0
+            return 1
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
+            if(direction == 'left'):
+                self.driveMotors(-0.10, 0.10)
+            else:
+                self.driveMotors(0.10, -0.10)
+        elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
+            print("ENTRA")
+            self.driveMotors(-0.05, 0.05)
+        elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
+            print("ENTRA")
+            self.driveMotors(0.05, -0.05)
+        elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-2)):
+            self.driveMotors(-0.005,0.005)
+        elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+2)):
+            self.driveMotors(0.005,-0.005)
+        elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
+            if(self.measures.compass==(degrees+2)):
+                self.driveMotors(0.004,-0.004)
+                self.walk += 1
+            elif(self.measures.compass==(degrees-2)):
+                self.driveMotors(-0.004,0.004)
+                self.walk += 1
+            else:
+                self.walk += 1
+                self.driveMotors(0,0)
+        else:
+            pass
 class Map():
     def __init__(self, filename):
         tree = ET.parse(filename)
