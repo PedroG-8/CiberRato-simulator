@@ -11,17 +11,17 @@
                          - - - - - - - - - - - - - -   
                         |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
                          - - X - X - - - X X - - - X   
-                          XIXXXXXX|     |X|XXXX   XX|  
-                           - - - X       X - X -   X   
-                                        |XXX|XXX| XX|  
-                                         - X - X   X   
-                                          |XXXXX| XX|  
-                                     -   - - X X   X   
-                                    |X| |X|X|     XX|  
-                                     X   X X       X   
-                                     X| |XXX|     XX|  
-                                     X - X X - - - X   
-                                    |XXXXXXXXXXXXXXX|  
-                                     - - - - - - - -   
+                        |XXIXXXXXX|XXXXX|X|XXXX   XX|  
+                         - - - - X X - - X - X -   X   
+                        |XXX|XXX|XXX|XXX|XXX|XXX| XX|  
+                         - X X - X - X X - X - X   X   
+                          |X|XXXXX|XXX|X| |XXXXX| XX|  
+                         - X - - - X - X X - X X   X   
+                        |XXX|XXXXXXX|X|X|XXXXX|   XX|  
+                         X - X - - - X X X - -     X   
+                        |X|X|X|XXXXXXX|XXX|       XX|  
+                         X X X X - - X - - X - - - X   
+                        |XXXXXXXXXXX|XXXXXXXXXXXXXXX|  
+                         - - - - - - - - - - - - - -   
                                                        
                                                        

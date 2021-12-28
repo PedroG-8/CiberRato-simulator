@@ -104,14 +104,10 @@ class MyRob(CRobLinkAngs):
     def stop_movement(self, sum):
         #print("Sensor 0:" + str(self.measures.irSensor[0]))
         if sum >= 1.85 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
+            # print('Sum >= 1.85')
             return True
         else:
             return False
-        # if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
-        # and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
-        #     return True
-        # else:
-        #     return False
 
     def calculateDist(self, in_spd, out_prev):
         return (in_spd + out_prev) / 2
@@ -124,6 +120,8 @@ class MyRob(CRobLinkAngs):
 
         # Calculates best path with astar
         if self.do_astar:
+            print('Soma no astar: ' + str(self.sum))
+            print('Esta a fazer Astar')
             min = 1000
 
             start = (self.pos[0], 26 - self.pos[1])
@@ -143,16 +141,23 @@ class MyRob(CRobLinkAngs):
                     pass
             self.do_astar=False
             self.go_to_ls = True
+            print('Path: ' + str(self.ls))
 
         # Does the path the astar returns
         if self.go_to_ls:
 
             if self.i == len(self.ls):
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.i = 1
                 self.complete_astar = False
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
             else:
+                self.sum = 0
+                self.out_now = 0
+                self.spd_out = 0
                 self.complete_astar = True
                 if (self.ls[self.i-1][0] < self.ls[self.i][0]):
                     self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
@@ -198,12 +203,13 @@ class MyRob(CRobLinkAngs):
                 else:
                     if self.measures.compass > 80 and self.measures.compass < 100:
                         self.go_back = True
-                    if self.measures.compass > -10 and self.measures.compass < 10:
+                    elif self.measures.compass > -10 and self.measures.compass < 10:
                         self.go_right = True
-                    if self.measures.compass > -100 and self.measures.compass < -80:
+                    elif self.measures.compass > -100 and self.measures.compass < -80:
                         self.go_front = True
                     else:
                         self.go_left = True
+
                 self.go_to_ls = False
                 self.i += 1
 
@@ -568,12 +574,12 @@ class MyRob(CRobLinkAngs):
                 self.go_left = False
                 self.go_right = False
                 self.go_back = True
-            #print('To visit:' + str(self.squares_to_visit))
-            #print(' Next position ' + str(self.next_pos))
+            # print('To visit:' + str(self.squares_to_visit))
+            # print(' Next position ' + str(self.next_pos))
         # If the robot has already been in the next position,
         # it goes to the next closest known position it hasn't been in.
         next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
-        print(' Next position ' + str(self.next_pos))
+        # print(' Next position ' + str(self.next_pos))
         if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0:
                 self.previous_pos=26-next_position[1],next_position[0]
@@ -582,6 +588,10 @@ class MyRob(CRobLinkAngs):
                 # If so, does astar
                 if self.previous == 1:
                     self.do_astar = True
+                    self.sum = 0
+                    self.out_now = 0
+                    self.spd_out = 0
+                    outprev = 0
             if self.previous_pos!=(26-next_position[1],next_position[0]):
                 self.flag = 0
         else:
@@ -592,6 +602,7 @@ class MyRob(CRobLinkAngs):
         # print(self.measures.irSensor[left_id])
         # If the robot is going to the left, turns accordingly
         if self.go_left:
+            # print('Turn left')
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
@@ -629,7 +640,7 @@ class MyRob(CRobLinkAngs):
                 #print(self.spd_out)
                 self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
-                print('parou')
+                # print('parou')
                 self.sum = 0
                 self.out_now = 0
                 self.spd_out = 0
@@ -687,7 +698,7 @@ class MyRob(CRobLinkAngs):
                 #print(self.spd_out)
                 self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
-                print('parou')
+                # print('parou')
                 self.sum = 0
                 self.out_now = 0
                 self.spd_out = 0
@@ -708,6 +719,7 @@ class MyRob(CRobLinkAngs):
                     self.go_to_ls = True
         # If the robot is going to the right, turns accordingly
         if self.go_right:
+            # print('Turn right')
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
@@ -734,6 +746,8 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
             out_prev = self.out_now
+            # print('out prev after going righ: ' + str(out_prev))
+
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
             if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
@@ -745,7 +759,7 @@ class MyRob(CRobLinkAngs):
                 #print(self.spd_out)
                 self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
-                print('parou')
+                # print('parou')
                 self.sum = 0
                 self.out_now = 0
                 self.spd_out = 0
@@ -803,7 +817,7 @@ class MyRob(CRobLinkAngs):
                 #print(self.spd_out)
                 self.driveMotors(self.spd_out, self.spd_out-0.01)
             if self.stop_movement(self.sum):
-                print('parou')
+                # print('parou')
                 self.sum = 0
                 self.out_now = 0
                 self.spd_out = 0
@@ -826,6 +840,11 @@ class MyRob(CRobLinkAngs):
 
         #print('Sum: ' + str(self.sum))
         #print('Spd:' + str(self.spd_out))
+
+        # print('Out prev' + str(out_prev))
+        # print('Sum: ' + str(self.sum))
+        # print('Spd out now: ' + str(self.out_now))
+        # print('Spd out: ' + str(self.spd_out))
 
 
 
