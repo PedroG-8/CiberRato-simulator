@@ -105,6 +105,12 @@ class MyRob(CRobLinkAngs):
         #print("Sensor 0:" + str(self.measures.irSensor[0]))
         if sum >= 1.85 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
             # print('Sum >= 1.85')
+        
+            print(f"frente: {self.measures.irSensor[0]}")
+            print(f"esquerda: {self.measures.irSensor[1]}")
+            print(f"direita: {self.measures.irSensor[2]}")
+            print(f"tras: {self.measures.irSensor[3]}")
+            print("--------------------------------------------")
             return True
         else:
             return False
@@ -606,25 +612,25 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
@@ -632,15 +638,12 @@ class MyRob(CRobLinkAngs):
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
             if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.01, self.spd_out)
+                self.driveMotors(self.spd_out-0.005, self.spd_out)
             elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.01)
+                self.driveMotors(self.spd_out, self.spd_out-0.005)
             if self.stop_movement(self.sum):
-                # print('parou')
                 self.sum = 0
                 self.out_now = 0
                 self.spd_out = 0
@@ -664,25 +667,25 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
@@ -690,13 +693,11 @@ class MyRob(CRobLinkAngs):
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
             if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.01, self.spd_out)
+                self.driveMotors(self.spd_out-0.005, self.spd_out)
             elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.01)
+                self.driveMotors(self.spd_out, self.spd_out-0.005)
             if self.stop_movement(self.sum):
                 # print('parou')
                 self.sum = 0
@@ -723,25 +724,25 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'right') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'right') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'right') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
@@ -751,13 +752,11 @@ class MyRob(CRobLinkAngs):
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
             if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.01, self.spd_out)
+                self.driveMotors(self.spd_out-0.005, self.spd_out)
             elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.01)
+                self.driveMotors(self.spd_out, self.spd_out-0.005)
             if self.stop_movement(self.sum):
                 # print('parou')
                 self.sum = 0
@@ -783,25 +782,25 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.15
+                        self.spd_out = 0.14
                         self.driveMotors(self.spd_out, self.spd_out)
                         self.first_call = 0
             # Checks if the robot has reached the correct cell
@@ -809,13 +808,11 @@ class MyRob(CRobLinkAngs):
             self.out_now = self.calculateDist(self.spd_out, out_prev)
             self.sum += self.out_now
             if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.01, self.spd_out)
+                self.driveMotors(self.spd_out-0.005, self.spd_out)
             elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print("ENTROUUUUUUUUUUUUUUUUUUUUUUUUU")
                 #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.01)
+                self.driveMotors(self.spd_out, self.spd_out-0.005)
             if self.stop_movement(self.sum):
                 # print('parou')
                 self.sum = 0
@@ -851,7 +848,7 @@ class MyRob(CRobLinkAngs):
     # Turns the robot to the correct direction
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
-            if self.walk == 4:
+            if self.walk == 3:
                 self.walk = 0
                 self.driveMotors(0,0)
                 return 1
@@ -883,7 +880,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.walk += 1
                     self.driveMotors(0,0)
-        elif self.walk == 4:
+        elif self.walk == 3:
             self.walk = 0
             self.driveMotors(0,0)
             return 1
@@ -906,10 +903,10 @@ class MyRob(CRobLinkAngs):
             self.walk = 0
             self.driveMotors(0.005,-0.005)
         elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
-            if(self.measures.compass==(degrees+2)):
+            if(self.measures.compass==(degrees+2) or self.measures.compass==(degrees+1)):
                 self.driveMotors(0.004,-0.004)
                 self.walk += 1
-            elif(self.measures.compass==(degrees-2)):
+            elif(self.measures.compass==(degrees-2) or self.measures.compass==(degrees-1)):
                 self.driveMotors(-0.004,0.004)
                 self.walk += 1
             else:
