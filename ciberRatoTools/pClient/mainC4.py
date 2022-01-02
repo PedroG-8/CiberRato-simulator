@@ -39,6 +39,11 @@ class MyRob(CRobLinkAngs):
         self.spd_out_r = 0
         self.spd_out_l = 0
         self.tur=0
+        self.tur2=0
+        self.count=0
+        self.sum2=0
+        self.average=0.0
+        self.spd_out=0
 
         while True:
             self.readSensors()
@@ -76,19 +81,57 @@ class MyRob(CRobLinkAngs):
 
 
     def calculateDist(self, in_spd, out_prev):
-        return (in_spd + out_prev) / 2
+        out = (in_spd + out_prev) / 2
+        return out
 
     def wander(self):
         center_id = 0
-        #rotation tests because compass nise sucks
-        if self.tur == 0:
-            if self.turn(180,'right') == 1:
-                self.tur=1
-            print(self.measures.compass)
+        
+        
+        out_prev = self.out_now
+        
+        if self.sum<1.75:
+            self.out_now=0.15
+        elif self.sum>1.75 and self.sum<1.82:
+            self.out_now=0.05
         else:
+            self.out_now=0
+        
+        if self.sum>1.999:
             exit()
+            
+        self.out_now = self.calculateDist(self.out_now, out_prev)
+        self.sum += self.out_now
+        print(self.sum)
+        self.driveMotors(self.out_now,self.out_now)
+        # rotation tests because compass nise sucks
+        # if self.tur2 == 0:
+        #     if self.turn(90,"left") == 1:
+        #         self.tur2=1
+        # if self.tur == 0 and self.tur2==1:
+        #    if self.compass_analysis() == 1:
+        #        self.tur=1
+        #        exit()
+        #    print(self.measures.compass)
+        
 
+    def compass_analysis(self):
+        
+        if(self.count==10):
+            print(f"average {self.average}")
+            self.sum2=self.average=self.count=0
+            return 1
 
+        if (self.measures.compass > self.average + 3 or self.measures.compass < self.average - 3) and self.count > 2:
+            print("NOPE")
+            pass
+        else:
+            self.sum2 += self.measures.compass
+            self.count +=1
+        try:
+            self.average=self.sum2/self.count
+        except:
+            print("Can't divide by 0")
 
     # Turns the robot to the correct direction
     def turn(self, degrees, direction):
@@ -120,7 +163,8 @@ class MyRob(CRobLinkAngs):
                 print("Acabou")
                 self.out_now_left=self.out_now_right=self.previous_theta=0
                 return 1
-        elif degrees==180:
+                #exit()
+        elif degrees==180 or degrees==-180:
             if (self.previous_theta < 2.68):
                 self.spd_out_l=-0.15
                 self.spd_out_r=0.15
@@ -144,6 +188,7 @@ class MyRob(CRobLinkAngs):
                 self.out_now_left=self.out_now_right=self.previous_theta=0
                 return 1
         else:
+            print("UNEXPECTED!!!!")
             return 1
 
 class Map():
