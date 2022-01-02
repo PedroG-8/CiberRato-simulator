@@ -52,6 +52,8 @@ class MyRob(CRobLinkAngs):
         self.out_now = 0
         self.sum = 0
         self.spd_out = 0
+        self.stop_movement_signal = 0
+        self.second_call = 0
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -99,21 +101,6 @@ class MyRob(CRobLinkAngs):
                 if self.measures.returningLed==True:
                     self.setReturningLed(False)
                 self.wander()
-
-
-    def stop_movement(self, sum):
-        #print("Sensor 0:" + str(self.measures.irSensor[0]))
-        if sum >= 1.85 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
-            # print('Sum >= 1.85')
-        
-            print(f"frente: {self.measures.irSensor[0]}")
-            print(f"esquerda: {self.measures.irSensor[1]}")
-            print(f"direita: {self.measures.irSensor[2]}")
-            print(f"tras: {self.measures.irSensor[3]}")
-            print("--------------------------------------------")
-            return True
-        else:
-            return False
 
     def calculateDist(self, in_spd, out_prev):
         return (in_spd + out_prev) / 2
@@ -612,41 +599,37 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
-            # Checks if the robot has reached the correct cell
-            out_prev = self.out_now
-            self.out_now = self.calculateDist(self.spd_out, out_prev)
-            self.sum += self.out_now
-            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.005, self.spd_out)
-            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.005)
-            if self.stop_movement(self.sum):
-                self.sum = 0
+            if self.second_call:
+                if self.move2units() == 1:
+                    self.stop_movement_signal = 1
+                    self.second_call = 0
+            if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva direita")
+                self.driveMotors(self.out_now-0.007, self.out_now)
+            elif(self.measures.irSensor[left_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva esquerda")
+                self.driveMotors(self.out_now, self.out_now-0.007)
+            if self.stop_movement_signal:
                 self.out_now = 0
-                self.spd_out = 0
+                self.first_call = 1
+                self.stop_movement_signal = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
@@ -655,7 +638,6 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
-                self.first_call = 1
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
                     self.next_pos = (0, 0)
@@ -667,42 +649,37 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
-            # Checks if the robot has reached the correct cell
-            out_prev = self.out_now
-            self.out_now = self.calculateDist(self.spd_out, out_prev)
-            self.sum += self.out_now
-            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.005, self.spd_out)
-            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.005)
-            if self.stop_movement(self.sum):
-                # print('parou')
-                self.sum = 0
+            if self.second_call:
+                if self.move2units() == 1:
+                    self.stop_movement_signal = 1
+                    self.second_call = 0
+            if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva direita")
+                self.driveMotors(self.out_now-0.007, self.out_now)
+            elif(self.measures.irSensor[left_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva esquerda")
+                self.driveMotors(self.out_now, self.out_now-0.007)
+            if self.stop_movement_signal:
                 self.out_now = 0
-                self.spd_out = 0
+                self.first_call = 1
+                self.stop_movement_signal = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -712,7 +689,6 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
-                self.first_call = 1
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
                     self.next_pos = (0, 0)
@@ -724,44 +700,37 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'right') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'right') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'right') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
-            # Checks if the robot has reached the correct cell
-            out_prev = self.out_now
-            # print('out prev after going righ: ' + str(out_prev))
-
-            self.out_now = self.calculateDist(self.spd_out, out_prev)
-            self.sum += self.out_now
-            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.005, self.spd_out)
-            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.005)
-            if self.stop_movement(self.sum):
-                # print('parou')
-                self.sum = 0
+            if self.second_call:
+                if self.move2units() == 1:
+                    self.stop_movement_signal = 1
+                    self.second_call = 0
+            if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva direita")
+                self.driveMotors(self.out_now-0.007, self.out_now)
+            elif(self.measures.irSensor[left_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva esquerda")
+                self.driveMotors(self.out_now, self.out_now-0.007)
+            if self.stop_movement_signal:
                 self.out_now = 0
-                self.spd_out = 0
+                self.first_call = 1
+                self.stop_movement_signal = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -771,7 +740,6 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
-                self.first_call = 1
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
                     self.next_pos = (0, 0)
@@ -782,42 +750,37 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.spd_out = 0.14
-                        self.driveMotors(self.spd_out, self.spd_out)
+                        self.second_call = 1
                         self.first_call = 0
-            # Checks if the robot has reached the correct cell
-            out_prev = self.out_now
-            self.out_now = self.calculateDist(self.spd_out, out_prev)
-            self.sum += self.out_now
-            if(self.measures.irSensor[right_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out-0.005, self.spd_out)
-            elif(self.measures.irSensor[left_id]>7.0 and self.spd_out!=0):
-                #print(self.spd_out)
-                self.driveMotors(self.spd_out, self.spd_out-0.005)
-            if self.stop_movement(self.sum):
-                # print('parou')
-                self.sum = 0
+            if self.second_call:
+                if self.move2units() == 1:
+                    self.stop_movement_signal = 1
+                    self.second_call = 0
+            if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva direita")
+                self.driveMotors(self.out_now-0.007, self.out_now)
+            elif(self.measures.irSensor[left_id]>5.0 and self.first_call!=1):
+                print("correçao agressiva esquerda")
+                self.driveMotors(self.out_now, self.out_now-0.007)
+            if self.stop_movement_signal:
                 self.out_now = 0
-                self.spd_out = 0
+                self.first_call = 1
+                self.stop_movement_signal = 0
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -827,7 +790,6 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
-                self.first_call = 1
                 self.last_pos = self.next_pos
 
                 if not self.complete_astar:
@@ -914,6 +876,32 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(0,0)
         else:
             pass
+
+    def move2units(self):
+        out_prev = self.out_now
+        
+        if self.sum<1.75:
+            self.out_now=0.15
+        elif self.sum>1.75 and self.sum<1.82:
+            self.out_now=0.05
+        else:
+            self.out_now=0
+        
+        if self.sum>1.999 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
+            self.sum=0
+            print("--------------------------------------------")
+            print(f"bussola quando para: {self.measures.compass}")
+            print(f"frente: {self.measures.irSensor[0]}")
+            print(f"esquerda: {self.measures.irSensor[1]}")
+            print(f"direita: {self.measures.irSensor[2]}")
+            print(f"tras: {self.measures.irSensor[3]}")
+            print("--------------------------------------------\n")
+            return 1
+            
+        self.out_now = self.calculateDist(self.out_now, out_prev)
+        self.sum += self.out_now
+        #print(self.sum)
+        self.driveMotors(self.out_now,self.out_now)
 
 class Cell(object):
     def __init__(self, x, y, reachable):
