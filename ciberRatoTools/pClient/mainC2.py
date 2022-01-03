@@ -54,6 +54,8 @@ class MyRob(CRobLinkAngs):
         self.spd_out = 0
         self.stop_movement_signal = 0
         self.second_call = 0
+        self.beacons = []
+        self.number_ls = []
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -258,14 +260,34 @@ class MyRob(CRobLinkAngs):
 
         # The robot discovered the entire map
         if self.squares_to_visit == []:
+
+            for beacon in self.beacons:
+                print(beacon)
+                self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
+            with open(out_file, 'w') as out:
+                for i in self.matrix:
+                    out.write(''.join(i))
+                    out.write('\n')
             self.finish()
 
         # Prints the maze to an output file
+
         self.matrix[13][27] = 'I'
+
         with open(out_file, 'w') as out:
             for i in self.matrix:
                 out.write(''.join(i))
                 out.write('\n')
+
+
+        if self.measures.ground != -1 and self.measures.ground != 0:
+            beacon = {'number': self.measures.ground,
+                      'x': self.pos[0],
+                      'y': 26 - self.pos[1]}
+
+            if beacon['number'] not in self.number_ls:
+                self.beacons.append(beacon)
+                self.number_ls.append(beacon['number'])
 
         # The robot gets the next position to go to
         if self.next_pos == (0, 0):
@@ -879,29 +901,40 @@ class MyRob(CRobLinkAngs):
 
     def move2units(self):
         out_prev = self.out_now
-        
+
+
         if self.sum<1.75:
-            self.out_now=0.15
+            self.spd_out=0.15
         elif self.sum>1.75 and self.sum<1.82:
-            self.out_now=0.05
+            self.spd_out=0.05
         else:
-            self.out_now=0
-        
-        if self.sum>1.999 or (self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5):
-            self.sum=0
-            print("--------------------------------------------")
-            print(f"bussola quando para: {self.measures.compass}")
-            print(f"frente: {self.measures.irSensor[0]}")
-            print(f"esquerda: {self.measures.irSensor[1]}")
-            print(f"direita: {self.measures.irSensor[2]}")
-            print(f"tras: {self.measures.irSensor[3]}")
-            print("--------------------------------------------\n")
-            return 1
-            
-        self.out_now = self.calculateDist(self.out_now, out_prev)
+            self.spd_out=0
+
+        if self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5:
+            self.sum = 2
+        if self.sum>1.999:
+            if self.measures.irSensor[0] > 1.0 and self.measures.irSensor[0] < 1.8:
+                print('ESTA LONGE DA PAREDE')
+                self.driveMotors(0.15, 0.15)
+                return 2
+            else:
+                self.sum=0
+                self.spd_out=0
+                self.out_now=0
+                self.driveMotors(self.spd_out,self.spd_out)
+                print("--------------------------------------------")
+                print(f"bussola quando para: {self.measures.compass}")
+                print(f"frente: {self.measures.irSensor[0]}")
+                print(f"esquerda: {self.measures.irSensor[1]}")
+                print(f"direita: {self.measures.irSensor[2]}")
+                print(f"tras: {self.measures.irSensor[3]}")
+                print("--------------------------------------------\n")
+                return 1
+
+        self.out_now = self.calculateDist(self.spd_out, out_prev)
         self.sum += self.out_now
         #print(self.sum)
-        self.driveMotors(self.out_now,self.out_now)
+        self.driveMotors(self.spd_out,self.spd_out)
 
 class Cell(object):
     def __init__(self, x, y, reachable):
