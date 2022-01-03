@@ -257,6 +257,8 @@ class MyRob(CRobLinkAngs):
                 self.squares_to_visit.append((13, 25))
             else:
                 self.matrix[13][26] = '|'
+            init_beacon = {'number': 0, 'x': 27, 'y': 13}
+            self.beacons.append(init_beacon)
 
         # The robot discovered the entire map
         if self.squares_to_visit == []:
@@ -268,26 +270,27 @@ class MyRob(CRobLinkAngs):
                 for i in self.matrix:
                     out.write(''.join(i))
                     out.write('\n')
+
+            newdict = sorted(self.beacons, key = lambda i: i['number'])
+            # calculate first path
+            print(newdict)
+            start = newdict[0]['x'], newdict[0]['y']
+            end = newdict[1]['x'], newdict[1]['y']
+            print(start)
+            print(end)
+            self.ls = self.path_to_beacon(start, end)
+            print(self.ls)
             self.finish()
 
         # Prints the maze to an output file
 
-        self.matrix[13][27] = 'I'
+        self.matrix[13][27] = '0'
 
         with open(out_file, 'w') as out:
             for i in self.matrix:
                 out.write(''.join(i))
                 out.write('\n')
 
-
-        if self.measures.ground != -1 and self.measures.ground != 0:
-            beacon = {'number': self.measures.ground,
-                      'x': self.pos[0],
-                      'y': 26 - self.pos[1]}
-
-            if beacon['number'] not in self.number_ls:
-                self.beacons.append(beacon)
-                self.number_ls.append(beacon['number'])
 
         # The robot gets the next position to go to
         if self.next_pos == (0, 0):
@@ -660,6 +663,15 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
+                if self.measures.ground != -1 and self.measures.ground != 0:
+                    print(self.measures.ground)
+                    beacon = {'number': self.measures.ground,
+                              'x': self.pos[0],
+                              'y': 26 - self.pos[1]}
+
+                    if beacon not in self.beacons:
+                        self.beacons.append(beacon)
+
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
                     self.next_pos = (0, 0)
@@ -710,6 +722,14 @@ class MyRob(CRobLinkAngs):
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
+                if self.measures.ground != -1 and self.measures.ground != 0:
+                    print(self.measures.ground)
+                    beacon = {'number': self.measures.ground,
+                              'x': self.pos[0],
+                              'y': 26 - self.pos[1]}
+
+                    if beacon not in self.beacons:
+                        self.beacons.append(beacon)
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
@@ -762,6 +782,15 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
+                if self.measures.ground != -1 and self.measures.ground != 0:
+                    print(self.measures.ground)
+                    beacon = {'number': self.measures.ground,
+                              'x': self.pos[0],
+                              'y': 26 - self.pos[1]}
+
+                    if beacon not in self.beacons:
+                        self.beacons.append(beacon)
+
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
                     self.next_pos = (0, 0)
@@ -811,6 +840,15 @@ class MyRob(CRobLinkAngs):
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
+
+                if self.measures.ground != -1 and self.measures.ground != 0:
+                    print(self.measures.ground)
+                    beacon = {'number': self.measures.ground,
+                              'x': self.pos[0],
+                              'y': 26 - self.pos[1]}
+
+                    if beacon not in self.beacons:
+                        self.beacons.append(beacon)
 
                 self.last_pos = self.next_pos
 
@@ -898,6 +936,22 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(0,0)
         else:
             pass
+
+    def path_to_beacon(self, start, end):
+        a = AStar()
+        a.init_grid(55, 27, self.walls, start, end)
+        print('Path to beacon\n--------------\n')
+        print('start: ' + str(start))
+        print('end: ' + str(start))
+        path = a.solve()
+
+        path = path[::2]
+        print(path)
+
+        path_to_return = []
+        for i in path:
+            path_to_return.append((i[0] - 27, 13 - i[1]))
+        return path_to_return
 
     def move2units(self):
         out_prev = self.out_now
