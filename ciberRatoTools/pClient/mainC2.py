@@ -272,14 +272,19 @@ class MyRob(CRobLinkAngs):
                     out.write('\n')
 
             newdict = sorted(self.beacons, key = lambda i: i['number'])
-            # calculate first path
-            print(newdict)
-            start = newdict[0]['x'], newdict[0]['y']
-            end = newdict[1]['x'], newdict[1]['y']
-            print(start)
-            print(end)
-            self.ls = self.path_to_beacon(start, end)
-            print(self.ls)
+            final_path = []
+            for i in range(int(self.nBeacons)):
+
+                start = newdict[i]['x'], newdict[i]['y']
+                if i == int(self.nBeacons) - 1:
+                    i = -1
+                end = newdict[i + 1]['x'], newdict[i + 1]['y']
+                self.ls = self.path_to_beacon(start, end)
+                for p in range(len(self.ls)):
+                    if not (self.ls[p] != (0, 0) and p == len(self.ls) - 1):
+                        final_path.append(self.ls[p])
+
+            print(final_path)
             self.finish()
 
         # Prints the maze to an output file
