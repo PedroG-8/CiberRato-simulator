@@ -877,7 +877,7 @@ class MyRob(CRobLinkAngs):
         if(degrees == -180 or degrees == 180):
             if self.walk == 3:
                 self.walk = 0
-                self.driveMotors(0,0)
+                self.driveMotors(0.15,0.15)
                 return 1
             elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
                 if(direction == 'left'):
@@ -898,18 +898,18 @@ class MyRob(CRobLinkAngs):
                 self.walk = 0
                 self.driveMotors(0.005,-0.005)
             elif(self.measures.compass<=(-180+2) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-2) and self.measures.compass<=(180)):
-                if(self.measures.compass==(-180+2)):
-                    self.driveMotors(0.004,-0.004)
-                    self.walk += 1
-                elif(self.measures.compass==(180-2)):
-                    self.driveMotors(-0.004,0.004)
-                    self.walk += 1
-                else:
-                    self.walk += 1
-                    self.driveMotors(0,0)
+                # if(self.measures.compass==(-180+2)):
+                #     self.driveMotors(0.004,-0.004)
+                #     self.walk += 1
+                # elif(self.measures.compass==(180-2)):
+                #     self.driveMotors(-0.004,0.004)
+                #     self.walk += 1
+                # else:
+                self.walk += 1
+                self.driveMotors(0,0)
         elif self.walk == 3:
             self.walk = 0
-            self.driveMotors(0,0)
+            self.driveMotors(0.15,0.15)
             return 1
         elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
             if(direction == 'left'):
@@ -930,15 +930,15 @@ class MyRob(CRobLinkAngs):
             self.walk = 0
             self.driveMotors(0.005,-0.005)
         elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
-            if(self.measures.compass==(degrees+2) or self.measures.compass==(degrees+1)):
-                self.driveMotors(0.004,-0.004)
-                self.walk += 1
-            elif(self.measures.compass==(degrees-2) or self.measures.compass==(degrees-1)):
-                self.driveMotors(-0.004,0.004)
-                self.walk += 1
-            else:
-                self.walk += 1
-                self.driveMotors(0,0)
+            # if(self.measures.compass==(degrees+2) or self.measures.compass==(degrees+1)):
+            #     self.driveMotors(0.004,-0.004)
+            #     self.walk += 1
+            # elif(self.measures.compass==(degrees-2) or self.measures.compass==(degrees-1)):
+            #     self.driveMotors(-0.004,0.004)
+            #     self.walk += 1
+            # else:
+            self.walk += 1
+            self.driveMotors(0,0)
         else:
             pass
 
@@ -971,7 +971,7 @@ class MyRob(CRobLinkAngs):
 
         if self.spd_out > 0.07 and self.measures.irSensor[0] > 1.5:
             self.sum = 2
-        if self.sum>1.999:
+        if self.sum>1.95:
             if self.measures.irSensor[0] > 1.0 and self.measures.irSensor[0] < 1.8:
                 print('ESTA LONGE DA PAREDE')
                 self.driveMotors(0.15, 0.15)
