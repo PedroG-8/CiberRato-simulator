@@ -4,6 +4,7 @@ from croblink import *
 from math import *
 import xml.etree.ElementTree as ET
 import heapq
+import itertools
 
 CELLROWS=7
 CELLCOLS=14
@@ -260,32 +261,94 @@ class MyRob(CRobLinkAngs):
             init_beacon = {'number': 0, 'x': 27, 'y': 13}
             self.beacons.append(init_beacon)
 
+
         # The robot discovered the entire map
         if self.squares_to_visit == []:
 
+
+            # Print beacons on the maze
             for beacon in self.beacons:
-                print(beacon)
                 self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
+
+            # Write the maze on file
             with open(out_file, 'w') as out:
                 for i in self.matrix:
                     out.write(''.join(i))
                     out.write('\n')
 
-            newdict = sorted(self.beacons, key = lambda i: i['number'])
+            # Ordered dictionary useless
+            # newdict = sorted(self.beacons, key = lambda i: i['number'])
+            each_path = []
             final_path = []
-            for i in range(int(self.nBeacons)):
+            permutations_ls = []
 
-                start = newdict[i]['x'], newdict[i]['y']
-                if i == int(self.nBeacons) - 1:
-                    i = -1
-                end = newdict[i + 1]['x'], newdict[i + 1]['y']
+
+            # All beacons that are not the 0
+            for j in range(1, int(self.nBeacons)):
+                permutations_ls.append(j)
+
+            # List with all the permutations
+            per_ls = list(itertools.permutations(permutations_ls))
+            for i in per_ls:
+                each_path = []
+                start = self.beacons[0]['x'], self.beacons[0]['y']
+                for j in i:
+                    end = self.beacons[j]['x'], self.beacons[j]['y']
+                    self.ls = self.path_to_beacon(start, end)
+                    each_path.append(self.ls)
+                    # print(each_path)
+                    start = end
+                end = self.beacons[0]['x'], self.beacons[0]['y']
                 self.ls = self.path_to_beacon(start, end)
-                for p in range(len(self.ls)):
-                    if not (self.ls[p] != (0, 0) and p == len(self.ls) - 1):
-                        final_path.append(self.ls[p])
+                each_path.append(self.ls)
+                # print(each_path)
 
-            print(final_path)
+                if each_path not in final_path:
+                    final_path.append(each_path)
+                else:
+                    print('JA LA ESTA')
+
+                min_path_len = 1000
+                for p in final_path:
+                    new_ls = []
+                    for beac in p:
+                        i = 0
+                        for pos in beac:
+                            if i != 0 or pos == (0, 0):
+                                new_ls.append(pos)
+                            i += 1
+                    print('NOVA LISTA: ' + str(new_ls))
+                    print('SIZE: ' + str(len(new_ls)))
+                    if len(new_ls) < min_path_len:
+                        min_path_len = len(new_ls)
+                        min_path = new_ls
+                print(min_path)
+                # Write the maze on file
+                with open('path.out', 'w') as out:
+                    for i in min_path:
+                        out.write(str(i))
+                        out.write('\n')
+            # for i in final_path:
+
+            # print(final_path)
             self.finish()
+                # print(start, end)
+            # print(final_path)
+
+            # Loop through all beacons
+            # for i in range(int(self.nBeacons)):
+            #
+            #     start = newdict[i]['x'], newdict[i]['y']
+            #     if i == int(self.nBeacons) - 1:
+            #         i = -1
+            #     end = newdict[i + 1]['x'], newdict[i + 1]['y']
+            #     self.ls = self.path_to_beacon(start, end)
+            #     for p in range(len(self.ls)):
+            #         if not (self.ls[p] != (0, 0) and p == len(self.ls) - 1):
+            #             final_path.append(self.ls[p])
+            #
+            # print(final_path)
+
 
         # Prints the maze to an output file
 
@@ -945,13 +1008,13 @@ class MyRob(CRobLinkAngs):
     def path_to_beacon(self, start, end):
         a = AStar()
         a.init_grid(55, 27, self.walls, start, end)
-        print('Path to beacon\n--------------\n')
-        print('start: ' + str(start))
-        print('end: ' + str(start))
+        # print('Path to beacon\n--------------\n')
+        # print('start: ' + str(start))
+        # print('end: ' + str(end))
         path = a.solve()
 
         path = path[::2]
-        print(path)
+        # print(path)
 
         path_to_return = []
         for i in path:
