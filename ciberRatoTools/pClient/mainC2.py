@@ -261,6 +261,8 @@ class MyRob(CRobLinkAngs):
             init_beacon = {'number': 0, 'x': 27, 'y': 13}
             self.beacons.append(init_beacon)
 
+            with open('path.out', 'w') as out:
+                out.write('')
 
         # The robot discovered the entire map
         if self.squares_to_visit == []:
@@ -317,8 +319,6 @@ class MyRob(CRobLinkAngs):
                             if i != 0 or pos == (0, 0):
                                 new_ls.append(pos)
                             i += 1
-                    print('NOVA LISTA: ' + str(new_ls))
-                    print('SIZE: ' + str(len(new_ls)))
                     if len(new_ls) < min_path_len:
                         min_path_len = len(new_ls)
                         min_path = new_ls
@@ -326,12 +326,13 @@ class MyRob(CRobLinkAngs):
                 # Write the maze on file
                 with open('path.out', 'w') as out:
                     for i in min_path:
-                        out.write(str(i))
+                        out.write(str(i).strip('()').replace(',', ''))
                         out.write('\n')
+                    self.finish()
             # for i in final_path:
 
             # print(final_path)
-            self.finish()
+
                 # print(start, end)
             # print(final_path)
 
@@ -1055,8 +1056,24 @@ class MyRob(CRobLinkAngs):
 
         self.out_now = self.calculateDist(self.spd_out, out_prev)
         self.sum += self.out_now
-        #print(self.sum)
-        self.driveMotors(self.spd_out,self.spd_out)
+        # if self.spd_out == 0.15:
+        #     if self.measures.irSensor[1] - self.measures.irSensor[2] > 1:
+        #         if self.measures.irSensor[1] - self.measures.irSensor[2] > 2:
+        #             print('muito perto da esquerda')
+        #             self.driveMotors(self.spd_out,self.spd_out-0.02)
+        #         else:
+        #             self.driveMotors(self.spd_out,self.spd_out-0.01)
+        #     elif self.measures.irSensor[2] - self.measures.irSensor[1] > 1:
+        #         if self.measures.irSensor[2] - self.measures.irSensor[1] > 2:
+        #             print('muito perto da direita')
+        #             self.driveMotors(self.spd_out-0.02,self.spd_out)
+        #         else:
+        #             self.driveMotors(self.spd_out-0.01,self.spd_out)
+        #     else:
+        #         self.driveMotors(self.spd_out, self.spd_out)
+        # else:
+        #     self.driveMotors(self.spd_out, self.spd_out)
+        self.driveMotors(self.spd_out, self.spd_out)
 
 class Cell(object):
     def __init__(self, x, y, reachable):
