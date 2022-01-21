@@ -60,7 +60,7 @@ class MyRob(CRobLinkAngs):
         self.number_ls = []
         self.count_to_3 = 0
         self.turn_signal = False
-        self.front_astar = False
+        self.start_astar = False
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -120,7 +120,7 @@ class MyRob(CRobLinkAngs):
 
         # Calculates best path with astar
         if self.do_astar:
-            self.front_astar = True
+            # self.front_astar = True
             #print('Soma no astar: ' + str(self.sum))
             print('Esta a fazer Astar                   *******************ASTAR*******************')
             min = 1000
@@ -156,7 +156,7 @@ class MyRob(CRobLinkAngs):
                 print("NEXT_POS 0,0 #1")
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
-                self.front_astar = False
+                # self.front_astar = False
             else:
                 self.sum = 0
                 self.out_now = 0
@@ -591,7 +591,7 @@ class MyRob(CRobLinkAngs):
                     except:
                         pass
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-                
+
                 print("RIGHT FALSE 3")
                 self.go_front = True
                 self.go_left = False
@@ -666,6 +666,7 @@ class MyRob(CRobLinkAngs):
                 self.previous += 1
                 # If so, does astar
                 if self.previous == 1:
+                    self.start_astar = True
                     self.do_astar = True
                     self.sum = 0
                     self.out_now = 0
@@ -753,13 +754,14 @@ class MyRob(CRobLinkAngs):
                 #if self.turn(-90, 'left') == 1:
                 print("VAI EM FRENTE (0,0)")
                 self.driveMotors(0,0)
-                if self.front_astar:
+                if self.start_astar:
                     if self.count_to_3 == 10:
                         print("VAI EM FRENTE NO ASTAR APOS X ciclos")
                         self.turn_signal=False
                         self.count_to_3 = 0
                         self.second_call = 1
                         self.first_call = 0
+                        self.start_astar = False
                 else:
                     self.turn_signal=False
                     self.count_to_3 = 0
