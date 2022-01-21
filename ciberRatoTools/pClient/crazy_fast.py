@@ -60,6 +60,7 @@ class MyRob(CRobLinkAngs):
         self.number_ls = []
         self.count_to_3 = 0
         self.turn_signal = False
+        self.front_astar = False
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -119,8 +120,9 @@ class MyRob(CRobLinkAngs):
 
         # Calculates best path with astar
         if self.do_astar:
+            self.front_astar = True
             #print('Soma no astar: ' + str(self.sum))
-            print('Esta a fazer Astar')
+            print('Esta a fazer Astar                   *******************ASTAR*******************')
             min = 1000
 
             start = (self.pos[0], 26 - self.pos[1])
@@ -154,6 +156,7 @@ class MyRob(CRobLinkAngs):
                 print("NEXT_POS 0,0 #1")
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
+                self.front_astar = False
             else:
                 self.sum = 0
                 self.out_now = 0
@@ -750,7 +753,14 @@ class MyRob(CRobLinkAngs):
                 #if self.turn(-90, 'left') == 1:
                 print("VAI EM FRENTE (0,0)")
                 self.driveMotors(0,0)
-                if self.count_to_3 == 3:
+                if self.front_astar:
+                    if self.count_to_3 == 10:
+                        print("VAI EM FRENTE NO ASTAR APOS X ciclos")
+                        self.turn_signal=False
+                        self.count_to_3 = 0
+                        self.second_call = 1
+                        self.first_call = 0
+                else:
                     self.turn_signal=False
                     self.count_to_3 = 0
                     self.second_call = 1
