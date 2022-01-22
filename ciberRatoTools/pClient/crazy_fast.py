@@ -61,6 +61,7 @@ class MyRob(CRobLinkAngs):
         self.count_to_3 = 0
         self.turn_signal = False
         self.start_astar = False
+        self.first_time=True
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -118,6 +119,8 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
 
+
+        #print("SELF LAST POS "+ str(self.last_pos))
         # Calculates best path with astar
         if self.do_astar:
             # self.front_astar = True
@@ -153,7 +156,6 @@ class MyRob(CRobLinkAngs):
                 self.spd_out = 0
                 self.i = 1
                 self.complete_astar = False
-                print("NEXT_POS 0,0 #1")
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
                 # self.front_astar = False
@@ -170,8 +172,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-
-                print("RIGHT FALSE")
+                print(str(self.next_pos) +" ********************************")
                 self.go_front = False
                 self.go_left = False
                 self.go_right = False
@@ -181,7 +182,6 @@ class MyRob(CRobLinkAngs):
                     if self.measures.compass > 60 and self.measures.compass < 120:
                         self.go_left = True
                     elif self.measures.compass > -30 and self.measures.compass < 30:
-                        print("FOI AQUI1")
                         self.go_back = True
                     elif self.measures.compass > -120 and self.measures.compass < -60:
                         self.go_right = True
@@ -195,7 +195,6 @@ class MyRob(CRobLinkAngs):
                     elif self.measures.compass > -120 and self.measures.compass < -60:
                         self.go_left = True
                     else:
-                        print("FOI AQUI2")
                         self.go_back = True
                 elif self.pos[0]==self.ls[self.i][0] and (26-self.pos[1])>self.ls[self.i][1]:
                     if self.measures.compass > 60 and self.measures.compass < 120:
@@ -203,14 +202,12 @@ class MyRob(CRobLinkAngs):
                     elif self.measures.compass > -30 and self.measures.compass < 30:
                         self.go_left = True
                     elif self.measures.compass > -120 and self.measures.compass < -60:
-                        print("FOI AQUI3")
                         self.go_back = True
                     else:
                         self.go_right = True
                 else:
                     if self.measures.compass > 60 and self.measures.compass < 120:
                         self.go_back = True
-                        print("FOI AQUI4")
                     elif self.measures.compass > -30 and self.measures.compass < 30:
                         self.go_right = True
                     elif self.measures.compass > -120 and self.measures.compass < -60:
@@ -279,7 +276,16 @@ class MyRob(CRobLinkAngs):
         # The robot discovered the entire map
         if self.squares_to_visit == []:
 
-
+            if self.first_time:
+                self.first_time=False
+                self.squares_to_visit.append((13,27))
+                self.start_astar = True
+                self.do_astar = True
+                self.out_now = 0
+                self.spd_out = 0
+                self.driveMotors(0,0)
+                print(str(self.squares_to_visit) + "  FIRST_TIME")
+                return 1
             # Print beacons on the maze
             for beacon in self.beacons:
                 self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
@@ -321,25 +327,25 @@ class MyRob(CRobLinkAngs):
                 else:
                     print('JA LA ESTA')
 
-                min_path_len = 1000
-                for p in final_path:
-                    new_ls = []
-                    for beac in p:
-                        i = 0
-                        for pos in beac:
-                            if i != 0 or pos == (0, 0):
-                                new_ls.append(pos)
-                            i += 1
-                    if len(new_ls) < min_path_len:
-                        min_path_len = len(new_ls)
-                        min_path = new_ls
-                print(min_path)
-                # Write the maze on file
-                with open('path.out', 'w') as out:
-                    for i in min_path:
-                        out.write(str(i).strip('()').replace(',', ''))
-                        out.write('\n')
-                    self.finish()
+            min_path_len = 1000
+            for p in final_path:
+                new_ls = []
+                for beac in p:
+                    i = 0
+                    for pos in beac:
+                        if i != 0 or pos == (0, 0):
+                            new_ls.append(pos)
+                        i += 1
+                if len(new_ls) < min_path_len:
+                    min_path_len = len(new_ls)
+                    min_path = new_ls
+            print(min_path)
+            # Write the maze on file
+            with open('path.out', 'w') as out:
+                for i in min_path:
+                    out.write(str(i).strip('()').replace(',', ''))
+                    out.write('\n')
+                self.finish()
 
         # Prints the maze to an output file
 
@@ -547,7 +553,6 @@ class MyRob(CRobLinkAngs):
                     if (26 - self.pos[1], self.pos[0] + 2) not in self.squares_to_visit and (26 - self.pos[1], self.pos[0] + 2) not in self.visited_squares:
                         self.squares_to_visit.append((26 - self.pos[1], self.pos[0] + 2))
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
-                print("RIGHT FALSE 2")
                 self.go_front = False
                 self.go_left = True
                 self.go_right = False
@@ -592,7 +597,6 @@ class MyRob(CRobLinkAngs):
                         pass
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
 
-                print("RIGHT FALSE 3")
                 self.go_front = True
                 self.go_left = False
                 self.go_right = False
@@ -650,7 +654,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-                print("RIGHT FALSE 3")
+
                 self.go_front = False
                 self.go_left = False
                 self.go_right = False
@@ -660,7 +664,7 @@ class MyRob(CRobLinkAngs):
         next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
         # print(' Next position ' + str(self.next_pos))
         if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
-            if self.flag == 0:
+            if self.flag == 0 and (not self.squares_to_visit==[]):
                 self.previous_pos=26-next_position[1],next_position[0]
                 self.flag = 1
                 self.previous += 1
@@ -709,7 +713,6 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             if self.second_call:
                 if self.move2units() == 1:
-                    print("CHAMOU 1")
                     self.stop_movement_signal = 1
                     self.second_call = 0
             if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
@@ -741,7 +744,6 @@ class MyRob(CRobLinkAngs):
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
-                    print("NEXT_POS 0,0 #2")
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -752,11 +754,9 @@ class MyRob(CRobLinkAngs):
                 self.count_to_3 +=1
                 self.turn_signal=True
                 #if self.turn(-90, 'left') == 1:
-                print("VAI EM FRENTE (0,0)")
                 self.driveMotors(0,0)
                 if self.start_astar:
-                    if self.count_to_3 == 10:
-                        print("VAI EM FRENTE NO ASTAR APOS X ciclos")
+                    if self.count_to_3 == 20:
                         self.turn_signal=False
                         self.count_to_3 = 0
                         self.second_call = 1
@@ -769,7 +769,6 @@ class MyRob(CRobLinkAngs):
                     self.first_call = 0
             if self.second_call:
                 if self.move2units() == 1:
-                    print("CHAMOU 2")
                     self.stop_movement_signal = 1
                     self.second_call = 0
             if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
@@ -801,7 +800,6 @@ class MyRob(CRobLinkAngs):
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
-                    print("NEXT_POS 0,0 #3")
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -837,7 +835,6 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             if self.second_call:
                 if self.move2units() == 1:
-                    print("CHAMOU 3")
                     self.stop_movement_signal = 1
                     self.second_call = 0
             if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
@@ -906,7 +903,6 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             if self.second_call:
                 if self.move2units() == 1:
-                    print("CHAMOU 4")
                     self.stop_movement_signal = 1
                     self.second_call = 0
             if(self.measures.irSensor[right_id]>5.0 and self.first_call!=1):
@@ -940,7 +936,6 @@ class MyRob(CRobLinkAngs):
                 self.last_pos = self.next_pos
 
                 if not self.complete_astar:
-                    print("NEXT_POS 0,0 #5")
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -957,7 +952,7 @@ class MyRob(CRobLinkAngs):
 
     # Turns the robot to the correct direction
     def turn(self, degrees, direction):
-        print("TURNNNNNN " + str(degrees) + "  " + str(direction) + "  bussola: "+ str(self.measures.compass))
+        #print("TURNNNNNN " + str(degrees) + "  " + str(direction) + "  bussola: "+ str(self.measures.compass))
         if(degrees == -180 or degrees == 180):
             if self.walk == 3:
                 self.walk = 0
@@ -1008,7 +1003,7 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.005,-0.005)
         elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
             self.walk += 1
-            print("WALK++")
+            #print("WALK++")
             self.driveMotors(0,0)
         else:
             pass
@@ -1030,14 +1025,14 @@ class MyRob(CRobLinkAngs):
         return path_to_return
 
     def move2units(self):
-        print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
+        #print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
         out_prev = self.out_now
 
 
         if self.sum<1.75:
             self.spd_out=0.15
         elif self.sum>1.75 and self.sum<1.82:
-            self.spd_out=0.05
+            self.spd_out=0.06
         else:
             self.spd_out=0
 
@@ -1045,7 +1040,6 @@ class MyRob(CRobLinkAngs):
             self.sum = 2
         if self.sum>1.95:
             if self.measures.irSensor[0] > 1.0 and self.measures.irSensor[0] < 1.8:
-                print('ESTA LONGE DA PAREDE')
                 self.driveMotors(0.15, 0.15)
                 return 2
             else:
@@ -1066,7 +1060,6 @@ class MyRob(CRobLinkAngs):
         self.sum += self.out_now
         angulo = self.measures.compass
         #print(str(angulo) + " angulooooo\n")
-        print(self.spd_out)
         if (angulo > 92 and angulo < 95) or (angulo > 2 and angulo < 5) or (angulo > -88 and angulo < -85) or (angulo > -178 and angulo < -175):
             self.driveMotors(self.spd_out, self.spd_out-0.007)
             #print("AJUSTE À DIREITA")
@@ -1081,7 +1074,6 @@ class MyRob(CRobLinkAngs):
             #print("AJUSTE AGRESSIVO À ESQUERDA")
         else:
             self.driveMotors(self.spd_out, self.spd_out)
-            print("ENTRA para dar lume nas rodas  " + str(self.spd_out))
         return 0
 
 class Cell(object):
