@@ -124,7 +124,6 @@ class MyRob(CRobLinkAngs):
         #print("SELF LAST POS "+ str(self.last_pos))
         # Calculates best path with astar
         if self.do_astar:
-            # self.front_astar = True
             #print('Soma no astar: ' + str(self.sum))
             print('Esta a fazer Astar                   *******************ASTAR*******************')
             min = 1000
@@ -159,7 +158,6 @@ class MyRob(CRobLinkAngs):
                 self.complete_astar = False
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
-                # self.front_astar = False
             else:
                 self.sum = 0
                 self.out_now = 0
@@ -282,16 +280,11 @@ class MyRob(CRobLinkAngs):
                 self.squares_to_visit.append((13,27))
                 self.start_astar = True
                 self.do_astar = True
+                print("ASTAR TRUE 2")
                 self.out_now = 0
                 self.spd_out = 0
                 self.driveMotors(0,0)
                 print(str(self.squares_to_visit) + "  FIRST_TIME")
-                return 1
-
-            self.count_to_finish+=1
-            if self.count_to_finish==13:
-                self.driveMotors(0,0)
-                # Print beacons on the maze
                 for beacon in self.beacons:
                     self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
 
@@ -330,7 +323,8 @@ class MyRob(CRobLinkAngs):
                     if each_path not in final_path:
                         final_path.append(each_path)
                     else:
-                        print('JA LA ESTA')
+                        pass
+                        #print('JA LA ESTA')
 
                 min_path_len = 1000
                 for p in final_path:
@@ -344,13 +338,20 @@ class MyRob(CRobLinkAngs):
                     if len(new_ls) < min_path_len:
                         min_path_len = len(new_ls)
                         min_path = new_ls
-                print(min_path)
+                print("MIN PATHHHHH " + str(min_path))
+                self.go_to_ls = False
                 # Write the maze on file
                 with open('path.out', 'w') as out:
                     for i in min_path:
                         out.write(str(i).strip('()').replace(',', ''))
                         out.write('\n')
-                    self.finish()
+                return 1
+
+            self.count_to_finish+=1
+            if self.count_to_finish==13:
+                self.driveMotors(0,0)
+                # Print beacons on the maze
+                self.finish()
 
         # Prints the maze to an output file
 
@@ -677,6 +678,7 @@ class MyRob(CRobLinkAngs):
                 if self.previous == 1:
                     self.start_astar = True
                     self.do_astar = True
+                    print("ASTAR TRUE 2")
                     self.sum = 0
                     self.out_now = 0
                     self.spd_out = 0
@@ -1030,7 +1032,7 @@ class MyRob(CRobLinkAngs):
         return path_to_return
 
     def move2units(self):
-        print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
+        #print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
         out_prev = self.out_now
 
 
@@ -1052,13 +1054,13 @@ class MyRob(CRobLinkAngs):
                 self.spd_out=0
                 self.out_now=0
                 self.driveMotors(self.spd_out,self.spd_out)
-                print("--------------------------------------------")
-                print(f"bussola quando para: {self.measures.compass}")
-                print(f"frente: {self.measures.irSensor[0]}")
-                print(f"esquerda: {self.measures.irSensor[1]}")
-                print(f"direita: {self.measures.irSensor[2]}")
-                print(f"tras: {self.measures.irSensor[3]}")
-                print("--------------------------------------------\n")
+                # print("--------------------------------------------")
+                # print(f"bussola quando para: {self.measures.compass}")
+                # print(f"frente: {self.measures.irSensor[0]}")
+                # print(f"esquerda: {self.measures.irSensor[1]}")
+                # print(f"direita: {self.measures.irSensor[2]}")
+                # print(f"tras: {self.measures.irSensor[3]}")
+                # print("--------------------------------------------\n")
                 return 1
 
         self.out_now = self.calculateDist(self.spd_out, out_prev)
