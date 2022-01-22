@@ -63,6 +63,7 @@ class MyRob(CRobLinkAngs):
         self.start_astar = False
         self.first_time=True
         self.count_to_finish=0
+        self.chegou = True
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -145,6 +146,7 @@ class MyRob(CRobLinkAngs):
                     pass
             self.do_astar=False
             self.go_to_ls = True
+            self.chegou = False
             print('Path: ' + str(self.ls))
 
         # Does the path the astar returns
@@ -156,8 +158,10 @@ class MyRob(CRobLinkAngs):
                 self.spd_out = 0
                 self.i = 1
                 self.complete_astar = False
+                #print("TURN SIGNAL!!!!!!!!!   " + str(self.turn_signal))
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
+                self.chegou = True
             else:
                 self.sum = 0
                 self.out_now = 0
@@ -347,11 +351,9 @@ class MyRob(CRobLinkAngs):
                         out.write('\n')
                 return 1
 
-            self.count_to_finish+=1
-            if self.count_to_finish==13:
-                self.driveMotors(0,0)
-                # Print beacons on the maze
-                self.finish()
+            self.driveMotors(0,0)
+            # Print beacons on the maze
+            self.finish()
 
         # Prints the maze to an output file
 
@@ -364,7 +366,8 @@ class MyRob(CRobLinkAngs):
 
 
         # The robot gets the next position to go to
-        if self.next_pos == (0, 0) and not self.turn_signal:
+        if self.next_pos == (0, 0) and not self.turn_signal and self.chegou:
+            print("MARK WALLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSS")
             for t in self.visited_squares:
                 if t in self.squares_to_visit:
                     self.squares_to_visit.remove(t)
@@ -565,7 +568,7 @@ class MyRob(CRobLinkAngs):
                 self.go_back = False
 
             # If the front sensor is far from a wall, the robot goes in front
-            elif self.measures.irSensor[center_id] < 1.2:# and not self.turn_signal:
+            elif self.measures.irSensor[center_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
@@ -678,7 +681,6 @@ class MyRob(CRobLinkAngs):
                 if self.previous == 1:
                     self.start_astar = True
                     self.do_astar = True
-                    print("ASTAR TRUE 2")
                     self.sum = 0
                     self.out_now = 0
                     self.spd_out = 0
@@ -751,6 +753,7 @@ class MyRob(CRobLinkAngs):
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
+                    print("TURN SIGNALLLLLLL 1 " + str(self.turn_signal))
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -807,6 +810,7 @@ class MyRob(CRobLinkAngs):
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
+                    print("TURN SIGNALLLLLLL 2 " + str(self.turn_signal))
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -874,7 +878,7 @@ class MyRob(CRobLinkAngs):
 
                 self.last_pos = self.next_pos
                 if not self.complete_astar:
-                    print("NEXT_POS 0,0 #4")
+                    print("TURN SIGNALLLLLLL 3 " + str(self.turn_signal))
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -943,6 +947,7 @@ class MyRob(CRobLinkAngs):
                 self.last_pos = self.next_pos
 
                 if not self.complete_astar:
+                    print("TURN SIGNALLLLLLL 4 " + str(self.turn_signal))
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
@@ -1054,6 +1059,7 @@ class MyRob(CRobLinkAngs):
                 self.spd_out=0
                 self.out_now=0
                 self.driveMotors(self.spd_out,self.spd_out)
+                print("PAROU")
                 # print("--------------------------------------------")
                 # print(f"bussola quando para: {self.measures.compass}")
                 # print(f"frente: {self.measures.irSensor[0]}")
