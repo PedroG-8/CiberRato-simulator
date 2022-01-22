@@ -62,6 +62,7 @@ class MyRob(CRobLinkAngs):
         self.turn_signal = False
         self.start_astar = False
         self.first_time=True
+        self.count_to_finish=0
 
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -286,66 +287,70 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(0,0)
                 print(str(self.squares_to_visit) + "  FIRST_TIME")
                 return 1
-            # Print beacons on the maze
-            for beacon in self.beacons:
-                self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
 
-            # Write the maze on file
-            with open(out_file, 'w') as out:
-                for i in self.matrix:
-                    out.write(''.join(i))
-                    out.write('\n')
+            self.count_to_finish+=1
+            if self.count_to_finish==13:
+                self.driveMotors(0,0)
+                # Print beacons on the maze
+                for beacon in self.beacons:
+                    self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
 
-            # Ordered dictionary useless
-            each_path = []
-            final_path = []
-            permutations_ls = []
+                # Write the maze on file
+                with open(out_file, 'w') as out:
+                    for i in self.matrix:
+                        out.write(''.join(i))
+                        out.write('\n')
 
-
-            # All beacons that are not the 0
-            for j in range(1, int(self.nBeacons)):
-                permutations_ls.append(j)
-
-            # List with all the permutations
-            per_ls = list(itertools.permutations(permutations_ls))
-            for i in per_ls:
+                # Ordered dictionary useless
                 each_path = []
-                start = self.beacons[0]['x'], self.beacons[0]['y']
-                for j in i:
-                    end = self.beacons[j]['x'], self.beacons[j]['y']
+                final_path = []
+                permutations_ls = []
+
+
+                # All beacons that are not the 0
+                for j in range(1, int(self.nBeacons)):
+                    permutations_ls.append(j)
+
+                # List with all the permutations
+                per_ls = list(itertools.permutations(permutations_ls))
+                for i in per_ls:
+                    each_path = []
+                    start = self.beacons[0]['x'], self.beacons[0]['y']
+                    for j in i:
+                        end = self.beacons[j]['x'], self.beacons[j]['y']
+                        self.ls = self.path_to_beacon(start, end)
+                        each_path.append(self.ls)
+                        # print(each_path)
+                        start = end
+                    end = self.beacons[0]['x'], self.beacons[0]['y']
                     self.ls = self.path_to_beacon(start, end)
                     each_path.append(self.ls)
                     # print(each_path)
-                    start = end
-                end = self.beacons[0]['x'], self.beacons[0]['y']
-                self.ls = self.path_to_beacon(start, end)
-                each_path.append(self.ls)
-                # print(each_path)
 
-                if each_path not in final_path:
-                    final_path.append(each_path)
-                else:
-                    print('JA LA ESTA')
+                    if each_path not in final_path:
+                        final_path.append(each_path)
+                    else:
+                        print('JA LA ESTA')
 
-            min_path_len = 1000
-            for p in final_path:
-                new_ls = []
-                for beac in p:
-                    i = 0
-                    for pos in beac:
-                        if i != 0 or pos == (0, 0):
-                            new_ls.append(pos)
-                        i += 1
-                if len(new_ls) < min_path_len:
-                    min_path_len = len(new_ls)
-                    min_path = new_ls
-            print(min_path)
-            # Write the maze on file
-            with open('path.out', 'w') as out:
-                for i in min_path:
-                    out.write(str(i).strip('()').replace(',', ''))
-                    out.write('\n')
-                self.finish()
+                min_path_len = 1000
+                for p in final_path:
+                    new_ls = []
+                    for beac in p:
+                        i = 0
+                        for pos in beac:
+                            if i != 0 or pos == (0, 0):
+                                new_ls.append(pos)
+                            i += 1
+                    if len(new_ls) < min_path_len:
+                        min_path_len = len(new_ls)
+                        min_path = new_ls
+                print(min_path)
+                # Write the maze on file
+                with open('path.out', 'w') as out:
+                    for i in min_path:
+                        out.write(str(i).strip('()').replace(',', ''))
+                        out.write('\n')
+                    self.finish()
 
         # Prints the maze to an output file
 
@@ -1025,7 +1030,7 @@ class MyRob(CRobLinkAngs):
         return path_to_return
 
     def move2units(self):
-        #print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
+        print("MOVE2UNITS  bussola: " + str(self.measures.compass) + "  sensor: " + str(self.measures.irSensor[0]))
         out_prev = self.out_now
 
 
