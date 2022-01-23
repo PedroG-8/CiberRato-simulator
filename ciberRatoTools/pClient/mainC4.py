@@ -50,7 +50,6 @@ class MyRob(CRobLinkAngs):
         self.ls = []
         self.go_to_ls = False
         self.complete_astar = False
-        #self.fuckoff = False
         self.i = 1
         self.out_now = 0
         self.sum = 0
@@ -58,12 +57,10 @@ class MyRob(CRobLinkAngs):
         self.stop_movement_signal = 0
         self.second_call = 0
         self.beacons = []
-        self.number_ls = []
         self.count_to_3 = 0
         self.turn_signal = False
         self.start_astar = False
         self.first_time=True
-        self.count_to_finish=0
         self.doing_astar = True
 
         w, h = 55, 27
@@ -340,6 +337,9 @@ class MyRob(CRobLinkAngs):
                         out.write(str(i).strip('()').replace(',', ''))
                         out.write('\n')
                 return 1
+
+            for beacon in self.beacons:
+                self.matrix[beacon['y']][beacon['x']] = str(beacon['number'])
 
             self.driveMotors(0,0)
             # Print beacons on the maze
@@ -658,7 +658,6 @@ class MyRob(CRobLinkAngs):
         # If the robot has already been in the next position,
         # it goes to the next closest known position it hasn't been in.
         next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
-        # print(' Next position ' + str(self.next_pos))
         if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0 and (not self.squares_to_visit==[]):
                 self.previous_pos=26-next_position[1],next_position[0]
@@ -671,7 +670,6 @@ class MyRob(CRobLinkAngs):
                     self.sum = 0
                     self.out_now = 0
                     self.spd_out = 0
-                    outprev = 0
             if self.previous_pos!=(26-next_position[1],next_position[0]):
                 self.flag = 0
         else:
@@ -748,10 +746,9 @@ class MyRob(CRobLinkAngs):
             if self.first_call:
                 self.count_to_3 +=1
                 self.turn_signal=True
-                #if self.turn(-90, 'left') == 1:
                 self.driveMotors(0,0)
                 if self.start_astar:
-                    if self.count_to_3 == 20:
+                    if self.count_to_3 == 13:
                         self.turn_signal=False
                         self.count_to_3 = 0
                         self.second_call = 1
@@ -934,7 +931,6 @@ class MyRob(CRobLinkAngs):
 
     # Turns the robot to the correct direction
     def turn(self, degrees, direction):
-        #print("TURNNNNNN " + str(degrees) + "  " + str(direction) + "  bussola: "+ str(self.measures.compass))
         if(degrees == -180 or degrees == 180):
             if self.walk == 3:
                 self.walk = 0
@@ -985,7 +981,6 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.005,-0.005)
         elif(self.measures.compass<=(degrees+2) and self.measures.compass>=(degrees-2)):
             self.walk += 1
-            #print("WALK++")
             self.driveMotors(0,0)
         else:
             pass
@@ -1004,7 +999,6 @@ class MyRob(CRobLinkAngs):
 
     def move2units(self):
         out_prev = self.out_now
-
 
         if self.sum<1.75:
             self.spd_out=0.15
@@ -1029,9 +1023,9 @@ class MyRob(CRobLinkAngs):
         self.out_now = self.calculateDist(self.spd_out, out_prev)
         self.sum += self.out_now
         angulo = self.measures.compass
-        if (angulo > 92 and angulo < 95) or (angulo > 2 and angulo < 5) or (angulo > -88 and angulo < -85) or (angulo > -178 and angulo < -175):
+        if (angulo > 92 and angulo <= 95) or (angulo > 2 and angulo <= 5) or (angulo > -88 and angulo <= -85) or (angulo > -178 and angulo <= -175):
             self.driveMotors(self.spd_out, self.spd_out-0.007)
-        elif (angulo > 85 and angulo < 88) or (angulo > 175 and angulo < 178) or (angulo > -5 and angulo < -2) or (angulo > -95 and angulo < -92):
+        elif (angulo >= 85 and angulo < 88) or (angulo >= 175 and angulo < 178) or (angulo >= -5 and angulo < -2) or (angulo >= -95 and angulo < -92):
             self.driveMotors(self.spd_out-0.007, self.spd_out)
         elif (angulo > 95 and angulo < 105) or (angulo > 5 and angulo < 15) or (angulo > -85 and angulo < -75) or (angulo > -175 and angulo < -165):
             self.driveMotors(self.spd_out, self.spd_out-0.015)
