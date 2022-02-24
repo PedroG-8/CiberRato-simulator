@@ -1,5 +1,5 @@
-# RMI assignment 2
-## Program to command a robotic agent through an unknown maze
+# RMI assignment 2 - CiberRato Simulator
+## Program to command a robotic agent through an unknown maze, print the maze and the shortest path through all beacons in a file
 
 - Localization: The agent needs to navigate and localize itself in an unknown maze, using
 the movement model, the distance to obstacles and the compass. GPS is not available.
